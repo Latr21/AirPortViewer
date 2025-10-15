@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Flights – ADP{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Flights</h1>
+
+<form method="get" class="mb-3 flex flex-wrap gap-2 items-end">
+  <div>
+    <label class="block text-sm text-slate-600">Carrier</label>
+    <select name="carrier" class="border rounded px-3 py-2 min-w-[120px]">
+      <option value="">(tous)</option>
+      {% for c in carriers %}
+        <option value="{{ c }}" {% if carrier==c %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block text-sm text-slate-600">Origin</label>
+    <select name="origin" class="border rounded px-3 py-2 min-w-[120px]">
+      <option value="">(tous)</option>
+      {% for o in origins %}
+        <option value="{{ o }}" {% if origin==o %}selected{% endif %}>{{ o }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block text-sm text-slate-600">Dest</label>
+    <select name="dest" class="border rounded px-3 py-2 min-w-[120px]">
+      <option value="">(tous)</option>
+      {% for d in dests %}
+        <option value="{{ d }}" {% if dest==d %}selected{% endif %}>{{ d }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button class="bg-teal-600 text-white px-4 py-2 rounded">Filtrer</button>
+</form>
+
+<div class="overflow-x-auto bg-white rounded-xl shadow">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-100 text-slate-600">
+      <tr>
+        <th class="p-2 text-left">Date</th>
+        <th class="p-2 text-left">Heure</th>
+        <th class="p-2 text-left">Carrier</th>
+        <th class="p-2 text-left">Flight</th>
+        <th class="p-2 text-left">Origin</th>
+        <th class="p-2 text-left">Dest</th>
+        <th class="p-2 text-right">Dep Δ</th>
+        <th class="p-2 text-right">Arr Δ</th>
+        <th class="p-2 text-right">Distance</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for y, m, d, h, c, f, o, de, dd, ad, dist in rows %}
+      <tr class="border-t">
+        <td class="p-2">{{ "%04d-%02d-%02d"|format(y,m,d) }}</td>
+        <td class="p-2">{{ "%02d:00"|format(h) }}</td>
+        <td class="p-2">{{ c }}</td>
+        <td class="p-2">{{ f }}</td>
+        <td class="p-2">{{ o }}</td>
+        <td class="p-2">{{ de }}</td>
+        <td class="p-2 text-right">{{ dd if dd is not none else "" }}</td>
+        <td class="p-2 text-right">{{ ad if ad is not none else "" }}</td>
+        <td class="p-2 text-right">{{ dist }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-3 flex gap-2">
+  {% if page|int > 1 %}
+    <a class="px-3 py-1 border rounded"
+       href="?carrier={{ carrier }}&origin={{ origin }}&dest={{ dest }}&page={{ page|int - 1 }}&size={{ size }}">Précédent</a>
+  {% endif %}
+  <span class="px-3 py-1">Page {{ page }}</span>
+  {% if total > page*size %}
+    <a class="px-3 py-1 border rounded"
+       href="?carrier={{ carrier }}&origin={{ origin }}&dest={{ dest }}&page={{ page|int + 1 }}&size={{ size }}">Suivant</a>
+  {% endif %}
+</div>
+{% endblock %}

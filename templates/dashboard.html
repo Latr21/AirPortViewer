@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – ADP{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Dashboard</h1>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="p-4 bg-white rounded-xl shadow">
+    <div class="text-sm text-slate-500">Flights</div>
+    <div class="text-2xl font-semibold">{{ kpis.flights }}</div>
+  </div>
+  <div class="p-4 bg-white rounded-xl shadow">
+    <div class="text-sm text-slate-500">Airports</div>
+    <div class="text-2xl font-semibold">{{ kpis.airports }}</div>
+  </div>
+  <div class="p-4 bg-white rounded-xl shadow">
+    <div class="text-sm text-slate-500">Airlines</div>
+    <div class="text-2xl font-semibold">{{ kpis.airlines }}</div>
+  </div>
+  <div class="p-4 bg-white rounded-xl shadow">
+    <div class="text-sm text-slate-500">Planes</div>
+    <div class="text-2xl font-semibold">{{ kpis.planes }}</div>
+  </div>
+</div>
+
+<div class="grid md:grid-cols-2 gap-6">
+  <div class="bg-white rounded-xl shadow p-4">
+    <h2 class="font-semibold mb-2">Top 10 Destinations</h2>
+    <table class="w-full text-sm">
+      <thead><tr class="text-left text-slate-500">
+        <th class="py-1">Dest</th><th class="py-1 text-right">Vols</th>
+      </tr></thead>
+      <tbody>
+        {% for code, cnt in top_dest %}
+        <tr class="border-t">
+          <td class="py-1">{{ code }}</td>
+          <td class="py-1 text-right">{{ cnt }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="bg-white rounded-xl shadow p-4">
+    <h2 class="font-semibold mb-2">Top 10 Origines</h2>
+    <table class="w-full text-sm">
+      <thead><tr class="text-left text-slate-500">
+        <th class="py-1">Origin</th><th class="py-1 text-right">Vols</th>
+      </tr></thead>
+      <tbody>
+        {% for code, cnt in top_origin %}
+        <tr class="border-t">
+          <td class="py-1">{{ code }}</td>
+          <td class="py-1 text-right">{{ cnt }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

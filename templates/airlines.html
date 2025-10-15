@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Airlines – ADP{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Airlines</h1>
+
+<form method="get" class="mb-3 flex gap-2">
+  <input name="q" value="{{ q }}" placeholder="Code ou nom"
+         class="border rounded px-3 py-2 w-64"/>
+  <button class="bg-teal-600 text-white px-4 py-2 rounded">Rechercher</button>
+</form>
+
+<table class="w-full bg-white rounded-xl shadow overflow-hidden text-sm">
+  <thead class="bg-slate-100 text-slate-600">
+    <tr><th class="text-left p-2">Carrier</th><th class="text-left p-2">Name</th></tr>
+  </thead>
+  <tbody>
+    {% for a in rows %}
+    <tr class="border-t">
+      <td class="p-2 font-mono">{{ a.carrier }}</td>
+      <td class="p-2">{{ a.name }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="mt-3 flex gap-2">
+  {% if page|int > 1 %}
+    <a class="px-3 py-1 border rounded" href="?q={{ q }}&page={{ page|int - 1 }}&size={{ size }}">Précédent</a>
+  {% endif %}
+  <span class="px-3 py-1">Page {{ page }}</span>
+  {% if total > page*size %}
+    <a class="px-3 py-1 border rounded" href="?q={{ q }}&page={{ page|int + 1 }}&size={{ size }}">Suivant</a>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Airports – ADP{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Airports</h1>
+
+<form method="get" class="mb-3 flex gap-2">
+  <input name="q" value="{{ q }}" placeholder="FAA ou nom"
+         class="border rounded px-3 py-2 w-64"/>
+  <button class="bg-teal-600 text-white px-4 py-2 rounded">Rechercher</button>
+</form>
+
+<table class="w-full bg-white rounded-xl shadow overflow-hidden text-sm">
+  <thead class="bg-slate-100 text-slate-600">
+    <tr>
+      <th class="text-left p-2">FAA</th>
+      <th class="text-left p-2">Nom</th>
+      <th class="text-left p-2">TZ</th>
+      <th class="text-left p-2">DST</th>
+      <th class="text-left p-2">IANA</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in rows %}
+    <tr class="border-t">
+      <td class="p-2 font-mono">{{ a.faa }}</td>
+      <td class="p-2">{{ a.name }}</td>
+      <td class="p-2">{{ a.tz }}</td>
+      <td class="p-2">{{ a.dst }}</td>
+      <td class="p-2">{{ a.tzone }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="mt-3 flex gap-2">
+  {% if page|int > 1 %}
+    <a class="px-3 py-1 border rounded" href="?q={{ q }}&page={{ page|int - 1 }}&size={{ size }}">Précédent</a>
+  {% endif %}
+  <span class="px-3 py-1">Page {{ page }}</span>
+  {% if total > page*size %}
+    <a class="px-3 py-1 border rounded" href="?q={{ q }}&page={{ page|int + 1 }}&size={{ size }}">Suivant</a>
+  {% endif %}
+</div>
+{% endblock %}
