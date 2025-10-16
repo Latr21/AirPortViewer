@@ -1,0 +1,178 @@
+Question 1 : 
+
+#Total Aéroports
+SELECT COUNT(name) AS total_airports
+FROM airports;
+
+#Aéroports de départ
+SELECT COUNT(DISTINCT origin) AS total_origins
+FROM flights;
+
+# Aéroports de destination
+SELECT COUNT(DISTINCT dest) AS total_destinations
+FROM flights;
+
+Question 2 :
+
+# Aéroport de départ le plus emprunté
+SELECT origin, COUNT(*) AS total_vols
+FROM flights
+GROUP BY origin
+ORDER BY total_vols DESC
+LIMIT 1;
+
+# Aéroport de déstination les plus prisées
+SELECT a.name AS airport_name, COUNT(f.dest) AS total_vols
+FROM airports AS a
+LEFT JOIN flights AS f
+    ON a.faa = f.dest
+GROUP BY a.name
+ORDER BY total_vols DESC
+LIMIT 10;
+
+# Aéroport de déstination les moins prisées
+SELECT a.name AS airport_name, COUNT(f.dest) AS total_vols
+FROM airports AS a
+LEFT JOIN flights AS f
+    ON a.faa = f.dest
+GROUP BY a.name
+ORDER BY total_vols ASC
+LIMIT 10;
+
+# Avions qui ont le plus décollé
+SELECT tailnum, COUNT(*) AS total_vols
+FROM flights
+GROUP BY tailnum
+ORDER BY total_vols DESC
+LIMIT 10;
+
+# Avions qui ont le moins décollé
+SELECT tailnum, COUNT(*) AS total_vols
+FROM flights
+GROUP BY tailnum
+ORDER BY total_vols ASC
+LIMIT 10;
+
+Question 3 
+
+# Combien chaque compagnie a desservi de destination ?
+SELECT 
+    al.name AS airline_name,
+    COUNT(DISTINCT f.dest) AS nb_destinations_uniques
+FROM flights AS f
+JOIN airlines AS al
+    ON f.carrier = al.carrier
+GROUP BY al.name
+ORDER BY nb_destinations_uniques DESC
+LIMIT 10;
+
+# Par aéroports d'origine ?
+SELECT 
+    al.name AS airline_name,
+    COUNT(DISTINCT f.dest) AS nb_destinations_uniques
+FROM flights AS f
+JOIN airlines AS al
+    ON f.carrier = al.carrier
+GROUP BY al.name
+ORDER BY nb_destinations_uniques DESC
+LIMIT 10;
+
+Question 4  
+
+#Trouver tous les vols ayant atterri à Houston (IAH ou HOU)
+SELECT COUNT(*) AS nombre_vols_houston
+FROM flights
+WHERE dest IN ('IAH', 'HOU');
+
+#Combien de vols partent de NYC Airport vers Seattle ?
+SELECT COUNT(*) AS nombre_vols_nyc_vers_sea
+FROM flights
+WHERE origin IN ('JFK', 'LGA', 'EWR')
+  AND dest = 'SEA';
+
+#Combien de compagnies desservent cette destination et combien d'avions "uniques" ?
+SELECT COUNT(DISTINCT carrier) AS nombre_compagnies_nyc_vers_sea
+FROM flights
+WHERE origin IN ('JFK', 'LGA', 'EWR')
+  AND dest = 'SEA';
+
+SELECT COUNT(DISTINCT tailnum) AS nombre_avions_uniques_nyc_vers_sea
+FROM flights
+WHERE origin IN ('JFK', 'LGA', 'EWR')
+  AND dest = 'SEA';
+
+Question 5 
+#Combien de vols par destination ?
+SELECT dest, COUNT(*) AS nombre_vols
+FROM flights
+GROUP BY dest
+ORDER BY nombre_vols DESC;
+
+#Préparation et jointure des données sur les vols, aéroports et compagnies
+SELECT
+    ad.name AS nom_destination,
+    ao.name AS nom_origine,
+    al.name AS nom_compagnie,
+    COUNT(*) AS nombre_vols
+FROM flights AS f
+-- Jointure 1 : aéroport de destination
+LEFT JOIN airports AS ad
+    ON f.dest = ad.faa
+-- Jointure 2 : aéroport d’origine
+LEFT JOIN airports AS ao
+    ON f.origin = ao.faa
+-- Jointure 3 : compagnie aérienne
+LEFT JOIN airlines AS al
+    ON f.carrier = al.carrier
+GROUP BY
+    ad.name,
+    ao.name,
+    al.name
+ORDER BY
+    nom_destination ASC,
+    nom_origine ASC,
+    nom_compagnie ASC;
+
+Question 6 : 
+
+#Compagnies qui n'opèrent pas sur tous les aéroports d'origine
+
+WITH total_origines AS (
+    SELECT COUNT(DISTINCT origin) AS nb_total_origines
+    FROM flights
+),
+
+origines_par_carrier AS (
+    SELECT 
+        carrier,
+        COUNT(DISTINCT origin) AS nb_origines
+    FROM flights
+    GROUP BY carrier
+)
+SELECT 
+    o.carrier,
+    o.nb_origines
+FROM origines_par_carrier AS o
+CROSS JOIN total_origines AS t
+WHERE o.nb_origines < t.nb_total_origines
+ORDER BY o.nb_origines ASC;
+
+#Compagnies qui desservent l'ensemble des destinations
+WITH total_destinations AS (
+    SELECT COUNT(DISTINCT dest) AS nb_total_destinations
+    FROM flights
+),
+destinations_par_carrier AS (
+    SELECT 
+        carrier,
+        COUNT(DISTINCT dest) AS nb_destinations
+    FROM flights
+    GROUP BY carrier
+)
+SELECT 
+    o.carrier,
+    o.nb_destinations
+FROM destinations_par_carrier AS o
+CROSS JOIN total_destinations AS t
+WHERE o.nb_destinations = t.nb_total_destinations
+ORDER BY o.carrier;
