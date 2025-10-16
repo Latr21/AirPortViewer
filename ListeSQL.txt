@@ -176,3 +176,41 @@ FROM destinations_par_carrier AS o
 CROSS JOIN total_destinations AS t
 WHERE o.nb_destinations = t.nb_total_destinations
 ORDER BY o.carrier;
+
+Question 7 
+
+#Destinations exclusives + compagnie correspondante
+WITH nb_compagnies_par_dest AS (
+    SELECT dest, COUNT(DISTINCT carrier) AS nb_carriers
+    FROM flights
+    GROUP BY dest
+),
+destinations_exclusives AS (
+    SELECT dest
+    FROM nb_compagnies_par_dest
+    WHERE nb_carriers = 1
+)
+SELECT 
+    ap.name     AS nom_destination,
+    f.dest      AS code_destination,
+    al.name     AS nom_compagnie
+FROM flights AS f
+JOIN destinations_exclusives AS de
+  ON f.dest = de.dest
+JOIN airlines AS al
+  ON f.carrier = al.carrier
+JOIN airports AS ap
+  ON f.dest = ap.faa
+GROUP BY ap.name, f.dest, al.name
+ORDER BY ap.name;
+
+Question 8 
+Vols exploités par United, American ou Delta
+SELECT 
+    f.*,
+    al.name AS nom_compagnie
+FROM flights AS f
+JOIN airlines AS al
+    ON f.carrier = al.carrier
+WHERE al.name IN ('United Air Lines Inc.', 'American Airlines Inc.', 'Delta Air Lines Inc.')
+ORDER BY al.name, f.flight;
